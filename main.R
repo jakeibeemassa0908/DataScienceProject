@@ -35,6 +35,7 @@ n <- nrow(USRegionalMortality)
 
 #Split data into test/train 70 % train and 30 % test
 train <- sample(1:n, 0.7*n)
+test <- c(1:n)[-train]
 
 
 X.train <- USRegionalMortality[train, c("Region","Sex","Cause","Rate")]
@@ -46,7 +47,7 @@ set.seed(1)
 knn.pred <- knn(train=X.train,
                 test=X.test,
                 cl = y.train,
-                k=10)
+                k=20)
 
 mean(knn.pred != y.test)
 
@@ -72,6 +73,61 @@ plot(K.set, knn.test.err,
      type='b',
      xlab="K",
      ylab="Test error")
+
+
+## Selecting BOTH variable subset & K.
+
+possible.subsets <- list()
+possible.subsets[[1]] <- c("Region","Sex","Cause","Rate")
+possible.subsets[[2]] <- c("Region","Cause","Rate")
+
+for (ind in 1:length(possible.subsets)){
+  var.subset <- possible.subsets[[ind]] 
+  X.train <- USRegionalMortality[train, var.subset]
+  y.train <- USRegionalMortality[train, "Status"]
+  
+  X.test <- USRegionalMortality[test, var.subset]
+  y.test <- USRegionalMortality[test, "Status"]
+  
+  K.set <- seq(1,200, by=5)
+  knn.test.err <- numeric(length(K.set))
+  
+  set.seed(1)
+  for (j in 1:length(K.set)){
+    knn.pred <- knn(train=X.train,
+                    test=X.test,
+                    cl=y.train,
+                    k=K.set[j])
+    knn.test.err[j] <- mean(knn.pred != y.test)
+  }
+  
+  if (ind == 1){
+    plot(K.set, knn.test.err,
+         type='b',
+         xlab="K",
+         ylab="Test error",
+         ylim=c(0.35,0.60),
+         col=length(var.subset))
+  }
+  
+  if (ind > 1){
+    lines(K.set, knn.test.err,
+          type='b',
+          xlab="K",
+          ylab="Test error",
+          col=length(var.subset))
+  }
+}
+
+
+legend("topright",
+       legend = c("Region, Sex ,Cause, Rate",
+                  "Region ,Cause, Rate"),
+       col=c(4:2),
+       lty=1)
+
+## BEST: ("Region,Cause, Rate") at K=5
+
 
 
 
