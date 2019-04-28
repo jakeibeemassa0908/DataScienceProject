@@ -2,7 +2,7 @@ library(lattice)
 library(dplyr)
 library(stringr)
 library(class)
-USRegionalMortality
+
 
 # Change Status and sex into binary values
 USRegionalMortality$Status =  ifelse(USRegionalMortality$Status == "Urban", 1, 0)
@@ -12,20 +12,24 @@ USRegionalMortality$Sex =  ifelse(USRegionalMortality$Sex == "Male", 1, 0)
 
 USRegionalMortality$Cause = case_when(
   USRegionalMortality$Cause == "Heart disease" ~ 1,
-  USRegionalMortality$Cause == "Cancer" ~ 2,
-  USRegionalMortality$Cause == "Unintentional injuries" ~ 3,
-  USRegionalMortality$Cause == "Lower respiratory" ~ 4,
-  USRegionalMortality$Cause == "Cerebrovascular diseases" ~ 5,
-  USRegionalMortality$Cause == "Alzheimers" ~ 6,
-  USRegionalMortality$Cause == "Diabetes" ~ 7,
-  USRegionalMortality$Cause == "Flu and pneumonia" ~ 8,
-  USRegionalMortality$Cause == "Nephritis" ~ 9,
-  USRegionalMortality$Cause == "Suicide" ~ 10
+  
+  TRUE ~  0
 )
 
 #change region into numerical categories
 
-USRegionalMortality$Region = str_sub(USRegionalMortality$Region,start=-1) 
+USRegionalMortality$Region = case_when(
+  USRegionalMortality$Region == "HHS Region 01" ~ 1000000000,
+  USRegionalMortality$Region == "HHS Region 02" ~ 0100000000,
+  USRegionalMortality$Region == "HHS Region 03" ~ 0010000000,
+  USRegionalMortality$Region == "HHS Region 04" ~ 0001000000,
+  USRegionalMortality$Region == "HHS Region 05" ~ 0000100000,
+  USRegionalMortality$Region == "HHS Region 06" ~ 0000010000,
+  USRegionalMortality$Region == "HHS Region 07" ~ 0000001000,
+  USRegionalMortality$Region == "HHS Region 08" ~ 0000000100,
+  USRegionalMortality$Region == "HHS Region 09" ~ 0000000010,
+  USRegionalMortality$Region == "HHS Region 10" ~ 0000000001
+)
 
 USRegionalMortality
 
@@ -38,16 +42,16 @@ train <- sample(1:n, 0.7*n)
 test <- c(1:n)[-train]
 
 
-X.train <- USRegionalMortality[train, c("Region","Sex","Cause","Rate")]
-y.train <- USRegionalMortality[train, "Status"]
-X.test <- USRegionalMortality[-train, c("Region","Sex","Cause","Rate")]
-y.test <- USRegionalMortality[-train, "Status"]
+X.train <- USRegionalMortality[train, c("Region","Sex","Status","Rate","SE")]
+y.train <- USRegionalMortality[train, "Cause"]
+X.test <- USRegionalMortality[-train, c("Region","Sex","Status","Rate","SE")]
+y.test <- USRegionalMortality[-train, "Cause"]
 
 set.seed(1)
 knn.pred <- knn(train=X.train,
                 test=X.test,
                 cl = y.train,
-                k=20)
+                k=60)
 
 mean(knn.pred != y.test)
 
@@ -78,8 +82,8 @@ plot(K.set, knn.test.err,
 ## Selecting BOTH variable subset & K.
 
 possible.subsets <- list()
-possible.subsets[[1]] <- c("Region","Sex","Cause","Rate")
-possible.subsets[[2]] <- c("Region","Cause","Rate")
+possible.subsets[[1]] <- c("Region","Sex","Status","Rate","SE")
+possible.subsets[[2]] <- c("Region","Sex","Rate","SE")
 
 for (ind in 1:length(possible.subsets)){
   var.subset <- possible.subsets[[ind]] 
@@ -106,7 +110,7 @@ for (ind in 1:length(possible.subsets)){
          type='b',
          xlab="K",
          ylab="Test error",
-         ylim=c(0.35,0.60),
+         ylim=c(0.20,0.60),
          col=length(var.subset))
   }
   
@@ -121,8 +125,8 @@ for (ind in 1:length(possible.subsets)){
 
 
 legend("topright",
-       legend = c("Region, Sex ,Cause, Rate",
-                  "Region ,Cause, Rate"),
+       legend = c("Region, Sex ,Status, Rate",
+                  "Region ,Status, Rate"),
        col=c(4:2),
        lty=1)
 
