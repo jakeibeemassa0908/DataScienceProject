@@ -44,7 +44,7 @@ test <- c(1:n)[-train]
 
 X.train <- USRegionalMortality[train, c("Region","Sex","Status","Rate")]
 y.train <- USRegionalMortality[train, "Cause"]
-X.test <- USRegionalMortality[test, c("Region","Status","Rate")]
+X.test <- USRegionalMortality[test, c("Region","Sex","Status","Rate")]
 y.test <- USRegionalMortality[test, "Cause"]
 
 set.seed(1)
