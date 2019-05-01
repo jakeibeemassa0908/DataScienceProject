@@ -42,21 +42,21 @@ train <- sample(1:n, 0.7*n)
 test <- c(1:n)[-train]
 
 
-X.train <- USRegionalMortality[train, c("Region","Sex","Status","Rate","SE")]
+X.train <- USRegionalMortality[train, c("Region","Sex","Status","Rate")]
 y.train <- USRegionalMortality[train, "Cause"]
-X.test <- USRegionalMortality[-train, c("Region","Sex","Status","Rate","SE")]
-y.test <- USRegionalMortality[-train, "Cause"]
+X.test <- USRegionalMortality[test, c("Region","Status","Rate")]
+y.test <- USRegionalMortality[test, "Cause"]
 
 set.seed(1)
 knn.pred <- knn(train=X.train,
                 test=X.test,
                 cl = y.train,
-                k=60)
+                k=7)
 
 mean(knn.pred != y.test)
 
 ### Now we can thoroughly compare KNN models with DIFFERENT Ks
-K.set <- seq(1,200, by=5)
+K.set <- seq(1,201, by=5)
 knn.test.err <- numeric(length(K.set))
 
 set.seed(1)
@@ -82,8 +82,8 @@ plot(K.set, knn.test.err,
 ## Selecting BOTH variable subset & K.
 
 possible.subsets <- list()
-possible.subsets[[1]] <- c("Region","Sex","Status","Rate","SE")
-possible.subsets[[2]] <- c("Region","Sex","Rate","SE")
+possible.subsets[[1]] <- c("Region","Sex","Status","Rate")
+possible.subsets[[2]] <- c("Region","Status","Rate")
 
 for (ind in 1:length(possible.subsets)){
   var.subset <- possible.subsets[[ind]] 
@@ -93,7 +93,7 @@ for (ind in 1:length(possible.subsets)){
   X.test <- USRegionalMortality[test, var.subset]
   y.test <- USRegionalMortality[test, "Status"]
   
-  K.set <- seq(1,200, by=5)
+  K.set <- seq(1,201, by=5)
   knn.test.err <- numeric(length(K.set))
   
   set.seed(1)
@@ -110,7 +110,7 @@ for (ind in 1:length(possible.subsets)){
          type='b',
          xlab="K",
          ylab="Test error",
-         ylim=c(0.20,0.60),
+         ylim=c(0,0.80),
          col=length(var.subset))
   }
   
@@ -129,8 +129,6 @@ legend("topright",
                   "Region ,Status, Rate"),
        col=c(4:2),
        lty=1)
-
-## BEST: ("Region,Cause, Rate") at K=5
 
 
 
