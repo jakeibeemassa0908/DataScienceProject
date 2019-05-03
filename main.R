@@ -37,8 +37,8 @@ USRegionalMortality
 set.seed(1)
 n <- nrow(USRegionalMortality)
 
-#Split data into test/train 70 % train and 30 % test
-train <- sample(1:n, 0.7*n)
+#Split data into test/train 80 % train and 20 % test
+train <- sample(1:n, 0.8*n)
 test <- c(1:n)[-train]
 
 
