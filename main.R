@@ -8,6 +8,8 @@ library(class)
 USRegionalMortality$Status =  ifelse(USRegionalMortality$Status == "Urban", 1, 0)
 USRegionalMortality$Sex =  ifelse(USRegionalMortality$Sex == "Male", 1, 0)
 
+USRegionalMortality$SE <- NULL
+
 # change mortality cause into numerical categories
 
 USRegionalMortality$Cause = case_when(
@@ -51,7 +53,7 @@ set.seed(1)
 knn.pred <- knn(train=X.train,
                 test=X.test,
                 cl = y.train,
-                k=7)
+                k=19)
 
 mean(knn.pred != y.test)
 
@@ -84,6 +86,7 @@ plot(K.set, knn.test.err,
 possible.subsets <- list()
 possible.subsets[[1]] <- c("Region","Sex","Status","Rate")
 possible.subsets[[2]] <- c("Region","Status","Rate")
+possible.subsets[[3]] <- c("Sex","Status","Rate")
 
 for (ind in 1:length(possible.subsets)){
   var.subset <- possible.subsets[[ind]] 
@@ -111,24 +114,33 @@ for (ind in 1:length(possible.subsets)){
          xlab="K",
          ylab="Test error",
          ylim=c(0,0.80),
-         col=length(var.subset))
+         col=1)
   }
   
-  if (ind > 1){
+  if (ind ==2 ){
     lines(K.set, knn.test.err,
           type='b',
           xlab="K",
           ylab="Test error",
-          col=length(var.subset))
+          col=2)
+  }
+  
+  if (ind ==3){
+    lines(K.set, knn.test.err,
+          type='b',
+          xlab="K",
+          ylab="Test error",
+          col=3)
   }
 }
 
 
 legend("topright",
        legend = c("Region, Sex ,Status, Rate",
-                  "Region ,Status, Rate"),
-       col=c(4:2),
-       lty=1)
+                  "Region ,Status, Rate",
+                  "Sex,Status, Rate"),
+       col=c(1:4),
+       lty=2)
 
 
 
