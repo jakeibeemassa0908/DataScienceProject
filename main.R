@@ -87,6 +87,7 @@ possible.subsets <- list()
 possible.subsets[[1]] <- c("Region","Sex","Status","Rate")
 possible.subsets[[2]] <- c("Region","Status","Rate")
 possible.subsets[[3]] <- c("Sex","Status","Rate")
+possible.subsets[[4]] <- c("Region","Sex","Status")
 
 for (ind in 1:length(possible.subsets)){
   var.subset <- possible.subsets[[ind]] 
@@ -113,7 +114,7 @@ for (ind in 1:length(possible.subsets)){
          type='b',
          xlab="K",
          ylab="Test error",
-         ylim=c(0,0.80),
+         ylim=c(0,0.90),
          col=1)
   }
   
@@ -132,13 +133,21 @@ for (ind in 1:length(possible.subsets)){
           ylab="Test error",
           col=3)
   }
+  if (ind ==4){
+    lines(K.set, knn.test.err,
+          type='b',
+          xlab="K",
+          ylab="Test error",
+          col=4)
+  }
 }
 
 
 legend("topright",
        legend = c("Region, Sex ,Status, Rate",
                   "Region ,Status, Rate",
-                  "Sex,Status, Rate"),
+                  "Sex,Status, Rate",
+                  "Region,Sex,Status"),
        col=c(1:4),
        lty=2)
 
