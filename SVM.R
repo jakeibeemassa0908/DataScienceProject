@@ -32,8 +32,10 @@ USRegionalMortality$Region = case_when(
 USRegionalMortality
 
 #Split data into training/testing. 70% training and 30% testing
+#Taking out SE because it does not add value
+USRegionalMortality$SE <- NULL
 set.seed(3033)
-intrain <- createDataPartition(y = USRegionalMortality$Cause, p = 0.7, list = FALSE)
+intrain <- createDataPartition(y = USRegionalMortality$Cause, p = 0.8, list = FALSE)
 training <- USRegionalMortality[intrain,]
 testing <- USRegionalMortality[-intrain,]
 
