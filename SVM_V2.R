@@ -67,21 +67,6 @@ USRegionalMortality
 
 #####################################################################
 #####################################################################
-x = USRegionalMortality
-x
-y = USRegionalMortality$Cause
-y
-plot(x, col = (3-y))
-
-dat = data.frame(x=x, y=as.factor(y))
-
-svmfit = svm(y~.,
-             data = dat,
-             kernel = "linear",
-             cost = 10,
-             scale = FALSE)
-
-plot(svmfit,dat)
 
 #####################################################################
 #using the tune function
@@ -94,27 +79,10 @@ tune.out <- tune(svm,
 summary(tune.out)
 
 #Plotting the 2D fitted boundary for 
-plot(tune.out$best.model, data = USRegionalMortality,
-     formula = status ~ sex)
+#plot(tune.out$best.model, data = USRegionalMortality,
+#     formula = status ~ sex)
 
 ######################################################################
-# testing the plot function to make sure it works #
-x1 = c(3,2,4,1,2,4,4)
-x2 = c(4,2,4,4,1,3,1)
-colors = c("red", "red", "red", "red", "blue", "blue", "blue")
-plot(x1, x2, col = colors, xlim = c(0,5), ylim = c(0,5))
-
-plot(x1, x2, col = colors, xlim = c(0, 5), ylim = c(0,5))
-abline(-0.5,1)
-
-
-plot(USRegionalMortality)
-x = USRegionalMortality$Region
-y = USRegionalMortality$Rate
-colors = c("red", "blue")
-plot(x, y, col = colors, xlim = c(0,11), ylim = c(0,100))
-
-#####################################################################
 #####################################################################
 
 
@@ -202,17 +170,3 @@ test_pred_grid
 
 confusionMatrix(table(test_pred_grid, testing$Cause))
 
-
-
-#Experimenting with plot for SVM fitted boundary
-##################################################################
-
-x = USRegionalMortality$Region
-y = USRegionalMortality$Rate
-colors = c("red", "blue")
-plot(x, y, col = colors, xlim = c(0,100), ylim = c(0,100))
-
-x = USRegionalMortality$Region
-y = USRegionalMortality$Rate
-colors = c("red", "blue")
-plot(x, y, col = colors, xlim = c(0,11), ylim = c(0,100))
