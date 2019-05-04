@@ -65,10 +65,10 @@ USRegionalMortality$Rate <- NULL
 #View results
 USRegionalMortality
 
-#####################################################################
-#####################################################################
+#############
 
-#####################################################################
+
+
 #using the tune function
 set.seed(3033)
 tune.out <- tune(svm,
@@ -78,12 +78,9 @@ tune.out <- tune(svm,
                  ranges = list(cost = c(0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 5)))
 summary(tune.out)
 
-#Plotting the 2D fitted boundary for 
-#plot(tune.out$best.model, data = USRegionalMortality,
-#     formula = status ~ sex)
 
-######################################################################
-#####################################################################
+
+############
 
 
 
