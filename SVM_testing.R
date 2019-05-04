@@ -33,35 +33,57 @@ USRegionalMortality$Region = case_when(
 
 USRegionalMortality
 
+plot(USRegionalMortality)
+plot(USRegionalMortality$Region)
+plot(USRegionalMortality$Status)
+plot(USRegionalMortality$Sex)
+plot(USRegionalMortality$Rate)
+
 
 #Taking out SE because it does not add value.
 USRegionalMortality$SE <- NULL
 #Look at results
 USRegionalMortality
 
-#Taking out sex to see if it has an effect.
+#Testing to see if taking out sex has any significant effect.
 USRegionalMortality$Sex <- NULL
 #View results
 USRegionalMortality
 
-#Taking out Region to see if it has an effect
+#Testing to see if taking out region has any significant effect.
 USRegionalMortality$Region <- NULL
 #View results
 USRegionalMortality
 
-#Taking out Status to see 
+#Testing to see if taking out status has any significant effect.
 USRegionalMortality$Status <- NULL
 #View results
 USRegionalMortality
 
-#Taking out Rate to see the effect it has
+#Testing to see if taking out rate has any significant effect.
 USRegionalMortality$Rate <- NULL
 #View results
 USRegionalMortality
 
+#####################################################################
+#####################################################################
+x = USRegionalMortality
+x
+y = USRegionalMortality$Cause
+y
+plot(x, col = (3-y))
 
+dat = data.frame(x=x, y=as.factor(y))
 
+svmfit = svm(y~.,
+             data = dat,
+             kernel = "linear",
+             cost = 10,
+             scale = FALSE)
 
+plot(svmfit,dat)
+
+#####################################################################
 #using the tune function
 set.seed(3033)
 tune.out <- tune(svm,
@@ -73,9 +95,27 @@ summary(tune.out)
 
 #Plotting the 2D fitted boundary for 
 plot(tune.out$best.model, data = USRegionalMortality,
-     formula = Region ~ Rate)
+     formula = status ~ sex)
+
+######################################################################
+# testing the plot function to make sure it works #
+x1 = c(3,2,4,1,2,4,4)
+x2 = c(4,2,4,4,1,3,1)
+colors = c("red", "red", "red", "red", "blue", "blue", "blue")
+plot(x1, x2, col = colors, xlim = c(0,5), ylim = c(0,5))
+
+plot(x1, x2, col = colors, xlim = c(0, 5), ylim = c(0,5))
+abline(-0.5,1)
 
 
+plot(USRegionalMortality)
+x = USRegionalMortality$Region
+y = USRegionalMortality$Rate
+colors = c("red", "blue")
+plot(x, y, col = colors, xlim = c(0,11), ylim = c(0,100))
+
+#####################################################################
+#####################################################################
 
 
 
@@ -99,14 +139,14 @@ summary(USRegionalMortality)
 #make target variable a categorical variable by using factor. For yes or no, like binary 1 or 0 
 training[["Cause"]] = factor(training[["Cause"]])
 
-# implementing the train control method "trctrl". trainControl will return a list 
-# which will be put "trctrl".  
+# Implementing the train control method "trctrl". trainControl will return a list 
+# which will be put into "trctrl".  
 # method: redefines the sampling method, and in this case is repeated Cross-Validation.
 # number: stores the amount of resampling iterations on the dataset.
 # repeats: this just contains the sets to compute for a repeated cross validation.
 trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
 
-#implenting SVM
+#implenting SVM using the train function
 svm_Linear <- train(Cause ~., data = training, method = "svmLinear",
                     trControl = trctrl,
                     preProcess = c("center", "scale"),
@@ -114,21 +154,19 @@ svm_Linear <- train(Cause ~., data = training, method = "svmLinear",
 
 
 
-
+############################################################
 #### testing this way of implementing SVM ####
 svm_Linear <- svm(Cause ~.,
                   data = training,
                   kernel = "linear",
                   cost = 10)
 summary(svm_Linear)
-
+###########################################################
 
 
 
 #check result of train method aka svm_linear
 svm_Linear
-
-#summary(svm_Linear)
 
 #Now we are ready to predict classes for our testing set
 #using the "predict" function from caret package. Passing in 2 arguments
@@ -156,10 +194,28 @@ plot(svm_Linear_Grid)
 #check prediction error 
 #mean(svm_Linear_Grid != testing)
 
-summary(svm_Linear_Grid)
+#summary(svm_Linear_Grid)
 
 #Test the model with the same C values
 test_pred_grid <- predict(svm_Linear_Grid, newdata = testing)
 test_pred_grid
 
 confusionMatrix(table(test_pred_grid, testing$Cause))
+
+
+
+
+
+
+#Experimenting with plot for SVM fitted boundary
+##################################################################
+
+x = USRegionalMortality$Region
+y = USRegionalMortality$Rate
+colors = c("red", "blue")
+plot(x, y, col = colors, xlim = c(0,100), ylim = c(0,100))
+
+x = USRegionalMortality$Region
+y = USRegionalMortality$Rate
+colors = c("red", "blue")
+plot(x, y, col = colors, xlim = c(0,11), ylim = c(0,100))
