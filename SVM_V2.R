@@ -204,9 +204,6 @@ confusionMatrix(table(test_pred_grid, testing$Cause))
 
 
 
-
-
-
 #Experimenting with plot for SVM fitted boundary
 ##################################################################
 
